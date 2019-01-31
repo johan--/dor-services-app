@@ -1,5 +1,5 @@
 class ObjectsController < ApplicationController
-  before_action :load_item, except: [:create]
+  before_action :load_item, except: [:create, :index, :show]
 
   rescue_from(Dor::ParameterError) do |e|
     render status: 400, plain: e.message
@@ -24,6 +24,32 @@ class ObjectsController < ApplicationController
       format.all { render status: 201, location: object_location(pid), plain: Dor::RegistrationResponse.new(reg_response).to_txt }
       format.json { render status: 201, location: object_location(pid), json: Dor::RegistrationResponse.new(reg_response) }
     end
+  end
+
+  def index
+    # TODO: make use of params[:model], and map to Dor object types?
+    # TODO: patch paging into AF? so relations can respond to `#page`?
+    paginate json: Dor::Item.all.to_a
+  end
+
+  def show
+    render status: 200, json: Dor::Item.find(params[:id]).to_json
+  rescue ActiveFedora::ObjectNotFoundError
+    render status: 404, json: { error: 'item not found' }
+  end
+
+  def update
+    @item.update(body_params)
+    head :no_content
+  rescue StandardError => e
+    render status: 500, json: { error: "#{e.class}: #{e.message}" }
+  end
+
+  def destroy
+    @item.destroy
+    head :no_content
+  rescue StandardError => e
+    render status: 500, json: { error: "#{e.class}: #{e.message}" }
   end
 
   # The param, source, can be passed as appended parameter to url:
