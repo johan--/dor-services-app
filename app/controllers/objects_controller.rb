@@ -15,6 +15,10 @@ class ObjectsController < ApplicationController
     render status: 500, plain: e.message
   end
 
+  rescue_from(SymphonyReader::RecordIncompleteError) do |e|
+    render status: 500, plain: e.message
+  end
+
   # Register new objects in DOR
   def create
     Rails.logger.info(params.inspect)
