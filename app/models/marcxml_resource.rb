@@ -2,6 +2,8 @@
 
 # MARC resource model for retrieving and transforming MARC records
 class MarcxmlResource
+  class InvalidMarcError < RuntimeError; end
+
   def self.find_by(catkey: nil, barcode: nil)
     if catkey
       new(catkey: catkey)
@@ -37,6 +39,27 @@ class MarcxmlResource
   end
 
   def marc_record
-    SymphonyReader.new(catkey: catkey).to_marc
+    mr = SymphonyReader.new(catkey: catkey).to_marc
+    mr.fields.freeze
+    validate_marc_record(mr)
+  end
+
+  def validate_marc_record(marc_rec)
+    err_prefix = "MARC record #{catkey} from Symphony should have exactly one populated"
+    raise InvalidMarcError, "#{err_prefix} leader" if marc_rec.leader.blank?
+
+    cf001s = marc_rec.fields('001')
+    raise InvalidMarcError, "#{err_prefix} 001" if cf001s.length != 1 || cf001s.first.value.blank?
+
+    cf008s = marc_rec.fields('008')
+    raise InvalidMarcError, "#{err_prefix} 008" if cf008s.length != 1 || cf008s.first.value.blank?
+
+    df245s = marc_rec.fields('245')
+    raise InvalidMarcError, "#{err_prefix} 245" if df245s.length != 1
+
+    sub_as = df245s[0].find_all { |subfield| subfield.code == 'a' }
+    raise InvalidMarcError, "#{err_prefix} 245 subfield a" if sub_as.length != 1 || sub_as.first.value.blank?
+
+    marc_rec
   end
 end

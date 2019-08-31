@@ -294,6 +294,7 @@ Style/FormatString:
     - 'config/initializers/okcomputer.rb'
     - 'spec/controllers/marcxml_controller_spec.rb'
     - 'spec/requests/metadata_refresh_spec.rb'
+    - 'spec/models/marcxml_resource_spec.rb'
     - 'spec/models/symphony_reader_spec.rb'
 
 # Offense count: 1
