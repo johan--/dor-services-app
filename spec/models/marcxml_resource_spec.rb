@@ -6,6 +6,7 @@ RSpec.describe MarcxmlResource do
   subject(:marcxml_rsrc) { described_class.new(catkey: catkey) }
 
   let(:catkey) { 'catkey' }
+  let(:symphony_url) { Settings.catalog.symphony.json_url % { catkey: catkey } }
   let(:body) do
     {
       resource: '/catalog/bib',
@@ -17,11 +18,7 @@ RSpec.describe MarcxmlResource do
           leader: '00956cem 2200229Ma 4500',
           fields: [
             { tag: '008', subfields: [{ code: '_', data: '041202s2000    ja nnn  s      f    eng d' }] },
-            {
-              tag: '245',
-              inds: '41',
-              subfields: [{ code: 'a', data: 'the title' }]
-            }
+            { tag: '245', inds: '41', subfields: [{ code: 'a', data: 'the title' }] }
           ]
         }
       }
@@ -36,7 +33,7 @@ RSpec.describe MarcxmlResource do
         body_len = 268
         my_body = Marshal.load(Marshal.dump(body))
         my_body[:fields][:bib].delete(:leader)
-        stub_request(:get, Settings.catalog.symphony.json_url % { catkey: catkey }).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
+        stub_request(:get, symphony_url).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
       end
 
       it 'raises InvalidMarcError' do
@@ -49,7 +46,7 @@ RSpec.describe MarcxmlResource do
         body_len = 212
         my_body = Marshal.load(Marshal.dump(body))
         my_body[:fields][:bib][:fields].delete_at(0)
-        stub_request(:get, Settings.catalog.symphony.json_url % { catkey: catkey }).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
+        stub_request(:get, symphony_url).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
       end
 
       it 'raises InvalidMarcError' do
@@ -62,7 +59,7 @@ RSpec.describe MarcxmlResource do
         body_len = 231
         my_body = Marshal.load(Marshal.dump(body))
         my_body[:fields][:bib][:fields].delete_at(1)
-        stub_request(:get, Settings.catalog.symphony.json_url % { catkey: catkey }).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
+        stub_request(:get, symphony_url).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
       end
 
       it 'raises InvalidMarcError' do
@@ -75,7 +72,7 @@ RSpec.describe MarcxmlResource do
         body_len = 303
         my_body = Marshal.load(Marshal.dump(body))
         my_body[:fields][:bib][:fields][1][:subfields][0][:code] = 'b'
-        stub_request(:get, Settings.catalog.symphony.json_url % { catkey: catkey }).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
+        stub_request(:get, symphony_url).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
       end
 
       it 'raises InvalidMarcError' do
@@ -88,7 +85,7 @@ RSpec.describe MarcxmlResource do
         body_len = 294
         my_body = Marshal.load(Marshal.dump(body))
         my_body[:fields][:bib][:fields][1][:subfields][0][:data] = ''
-        stub_request(:get, Settings.catalog.symphony.json_url % { catkey: catkey }).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
+        stub_request(:get, symphony_url).to_return(body: my_body.to_json, headers: { 'Content-Length': body_len })
       end
 
       it 'raises InvalidMarcError' do
