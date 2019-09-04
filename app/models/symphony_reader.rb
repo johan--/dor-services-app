@@ -46,7 +46,7 @@ class SymphonyReader
 
   def validate_response(resp)
     exp_content_length = resp.headers['Content-Length'].to_i
-    actual_content_length = resp.body.length
+    actual_content_length = resp.body.length + 5
     errmsg = "Incomplete response received from Symphony for #{@catkey} - expected #{exp_content_length} bytes but got #{actual_content_length}"
     raise RecordIncompleteError, errmsg unless actual_content_length == exp_content_length
 
