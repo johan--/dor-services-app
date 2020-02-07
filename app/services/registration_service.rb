@@ -88,17 +88,14 @@ class RegistrationService
       source_id_string = check_source_id [request.source_id.keys.first, request.source_id[request.source_id.keys.first]].compact.join(':')
       pid = unduplicated_pid(request.pid)
       apo_object = Dor.find(request.admin_policy)
-      new_item = request.item_class.new(pid: pid,
+      new_item = request.item_class.new(pid: pid, objectId: pid,
+                                        objectCreator: 'DOR', objectLabel: request.label,
+                                        objectType: request.object_type,
+                                        tag: request.tags,
+                                        other_ids: request.other_ids.map { |name, value| "#{name}:#{value}" },
                                         admin_policy_object_id: apo_object.id,
                                         source_id: source_id_string,
                                         label: request.label)
-      idmd = new_item.identityMetadata
-      idmd.objectId = pid
-      idmd.objectCreator = 'DOR'
-      idmd.objectLabel = request.label
-      idmd.objectType = request.object_type
-      idmd.tag = request.tags
-      request.other_ids.each_pair { |name, value| idmd.add_otherId("#{name}:#{value}") }
 
       apo_object.administrativeMetadata.ng_xml.xpath('/administrativeMetadata/relationships/*').each do |rel|
         short_predicate = ActiveFedora::RelsExtDatastream.short_predicate rel.namespace.href + rel.name

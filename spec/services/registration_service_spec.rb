@@ -177,12 +177,6 @@ RSpec.describe RegistrationService do
       end
     end
 
-    RSpec.shared_examples 'common registration' do
-      it 'produces a registered object' do
-        expect(@obj.identityMetadata.otherId).to match_array(params[:other_ids].collect { |*e| e.join(':') })
-      end
-    end
-
     describe 'should set rightsMetadata based on the APO default (but replace read rights) even if it is a collection' do
       before do
         coll = Dor::Collection.new(pid: pid)
@@ -192,7 +186,6 @@ RSpec.describe RegistrationService do
         @obj = register
       end
 
-      it_behaves_like 'common registration'
       it 'produces rightsMetadata XML' do
         expect(@obj.datastreams['rightsMetadata'].ng_xml).to be_equivalent_to stanford_xml
       end
@@ -221,7 +214,6 @@ RSpec.describe RegistrationService do
           @obj = register
         end
 
-        it_behaves_like 'common registration'
         it 'produces correct rels_ext' do
           expect(@obj.rels_ext.to_rels_ext).to be_equivalent_to <<-XML
             <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#"
@@ -245,7 +237,6 @@ RSpec.describe RegistrationService do
           @obj = register
         end
 
-        it_behaves_like 'common registration'
         it 'produces correct RELS-EXT' do
           expect(@obj.datastreams['RELS-EXT'].to_rels_ext).to be_equivalent_to <<-XML
             <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fedora="info:fedora/fedora-system:def/relations-external#"
@@ -271,7 +262,6 @@ RSpec.describe RegistrationService do
             @obj = register
           end
 
-          it_behaves_like 'common registration'
           it 'sets rightsMetadata based on the APO default' do
             expect(@obj.datastreams['rightsMetadata'].ng_xml).to be_equivalent_to stanford_xml
           end
@@ -283,7 +273,6 @@ RSpec.describe RegistrationService do
             @obj = register
           end
 
-          it_behaves_like 'common registration'
           it 'sets rightsMetadata based on the APO default but replace read rights to be world' do
             expect(@obj.datastreams['rightsMetadata'].ng_xml).to be_equivalent_to world_xml
           end
@@ -295,7 +284,6 @@ RSpec.describe RegistrationService do
             @obj = register
           end
 
-          it_behaves_like 'common registration'
           it 'sets rightsMetadata based on the APO default but replace read rights to be loc:music' do
             expect(@obj.datastreams['rightsMetadata'].ng_xml).to be_equivalent_to location_music_xml
           end
@@ -307,7 +295,6 @@ RSpec.describe RegistrationService do
             @obj = register
           end
 
-          it_behaves_like 'common registration'
           it 'sets rightsMetadata based on the APO default but replace read rights to be group stanford with the no-download rule' do
             expect(@obj.datastreams['rightsMetadata'].ng_xml).to be_equivalent_to stanford_no_download_xml
           end
@@ -320,7 +307,6 @@ RSpec.describe RegistrationService do
           @obj = register
         end
 
-        it_behaves_like 'common registration'
         it 'sets the descriptive metadata to basic mods using the label as title' do
           expect(@obj.datastreams['descMetadata'].ng_xml).to be_equivalent_to <<-XML
             <?xml version="1.0"?>
