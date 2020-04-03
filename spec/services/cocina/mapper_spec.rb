@@ -213,7 +213,7 @@ RSpec.describe Cocina::Mapper do
 
     context 'when item has identityMetadata objectLabel' do
       before do
-        item.identityMetadata.objectLabel = 'Use me'
+        item.objectLabel = 'Use me'
       end
 
       it 'prefers objectLabel' do
